@@ -46,8 +46,8 @@ function formatStarData(data) {
 			y: data[i].y,
 			z: data[i].z,
 			h: data[i].colorb_v <= 0 ? 180 : 15,
-			s: Math.floor(data[i].colorb_v * 100),
-			l: Math.floor(size)
+				s: Math.floor(data[i].colorb_v * 100),
+				l: Math.floor(size)
 		});
 	}
 	return starData;
@@ -66,9 +66,24 @@ router.get('/stars', function(req, res, next) {
 			res.json(formattedStarData);
 		});
 	} else {
-
 		res.json(formattedStarData);
 	}
+});
+
+router.get('/stars/:id', function(req, res, next) {
+	if (formattedStarData) {
+		var requestStar;
+		for (var i in formattedStarData) {
+			if (formattedStarData[i].id == req.params.id) {
+				requestStar = formattedStarData[i];
+				break;
+			}
+		}
+		if (requestStar) {
+			return requestStar;
+		}
+	}
+	res.end('No star data available');	
 });
 
 module.exports = router;
