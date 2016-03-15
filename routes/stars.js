@@ -7,13 +7,17 @@ var formattedStarData = [];
 
 function getAndFormatData() {
 	return new Promise(function (resolve, reject) {
-		for (var i=0;i<50;i++) {
+		for (var i=0;i<100;i++) {
 			starData.push(getStars(i));
 		}
-
 		Promise.all(starData).then(function(starPages) {
+			console.log('finished getting pages');
 			var allStars = starPages.reduce(function(pageA, pageB){
-				return pageA.concat(pageB);
+				if (pageB) {
+					return pageA.concat(pageB);
+				} else {
+					return pageA;
+				}
 			});
 			formattedStarData = formatStarData(allStars);
 			resolve(formattedStarData);
@@ -29,7 +33,12 @@ function getStars(page) {
 				body += chunk;
 			});
 			res.on('end', function() {
-				resolve(JSON.parse(body));
+				if (body.charAt(0) != '<') {
+					resolve(JSON.parse(body));
+				} else {
+					console.log('lost page '+page);
+					resolve();
+				}
 			});
 		});
 	});
@@ -38,17 +47,19 @@ function getStars(page) {
 function formatStarData(data) {
 	var starData = [];
 	for (var i in data) {
-		var size = formatSize(data[i].absmag);
-		starData.push({
-			id: data[i].id,
-			name: data[i].label,
-			x: data[i].x,
-			y: data[i].y,
-			z: data[i].z,
-			h: data[i].colorb_v <= 0 ? 180 : 15,
-				s: Math.floor(data[i].colorb_v * 100),
-				l: Math.floor(size)
-		});
+		if (data[i]) {
+			var size = formatSize(data[i].absmag);
+			starData.push({
+				id: data[i].id,
+				name: data[i].label,
+				x: data[i].x,
+				y: data[i].y,
+				z: data[i].z,
+				h: data[i].colorb_v <= 0 ? 180 : 15,
+					s: Math.floor(data[i].colorb_v * 100),
+					l: Math.floor(size)
+			});
+		}
 	}
 	return starData;
 }
