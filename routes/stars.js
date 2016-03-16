@@ -10,7 +10,7 @@ console.log('Getting stars...');
 function getPromiseChain() {
 	return new Promise(function(resolve, reject) {
 		function starPromises(i, starData) {
-			if (i >= 100) {
+			if (i >= 80) {
 				resolve(starData);
 				return;
 			}

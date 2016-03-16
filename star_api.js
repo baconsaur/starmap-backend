@@ -71,7 +71,7 @@ function formatStarData(data) {
 
 function formatSize(starSize) {
 	var offset = 16;
-	var total = 12;
+	var total = 24;
 	var scale = 100;
 	return Math.abs((starSize - offset) / total) * scale;
 }
