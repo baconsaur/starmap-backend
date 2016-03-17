@@ -57,6 +57,7 @@ function formatStarData(data) {
 			starData.push({
 				id: data[i].id,
 				name: data[i].label,
+				views: 0,
 				x: data[i].x,
 				y: data[i].y,
 				z: data[i].z,
