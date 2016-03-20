@@ -3,6 +3,7 @@ var router = express.Router();
 var http = require('http');
 var star_api = require('../star_api');
 var db = require('../db/db_api');
+var labels = require('../starlabels');
 
 var formattedStarData = [];
 
@@ -14,12 +15,19 @@ function attachViewRecords() {
 			for (var i in viewCounts) {
 				for (var j in formattedStarData) {
 					if (formattedStarData[j].id == viewCounts[i].id) {
-						formattedStarData[j].views = viewCounts[i].views;
+						if(viewCounts[i].views) {
+							formattedStarData[j].views = viewCounts[i].views;
+						}
+						if(viewCounts[i].label) {
+							formattedStarData[j].name = viewCounts[i].label;	
+						}
 						break;
 					}
 				}
 			}
 			resolve(formattedStarData);
+		}).catch(function(error) {
+			console.log(error);
 		});
 	});
 }
@@ -77,6 +85,13 @@ router.get('/stars/:id', function(req, res, next) {
 		}
 	}
 	res.end('No star data available');	
+});
+
+router.get('/addlabels', function(req, res, next) {
+	for (var i in labels) {
+		db.addLabels(labels[i]);	
+	}
+	res.end('labels dumped');
 });
 
 module.exports = router;

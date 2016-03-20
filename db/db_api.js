@@ -15,6 +15,13 @@ module.exports = {
 					console.log('record updated');	
 				}
 			});
-		}
+		},
+	addLabels: function(star) {
+		return views.update({id: star.id}, {$set: {label: star.label}}, {upsert:true, safe:false}, function(error) {
+			if (error) {
+				console.log(error);
+			}
+		});
+	}
 };
 
