@@ -26,8 +26,6 @@ function attachViewRecords() {
 				}
 			}
 			resolve(formattedStarData);
-		}).catch(function(error) {
-			console.log(error);
 		});
 	});
 }
