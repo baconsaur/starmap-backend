@@ -87,11 +87,11 @@ router.get('/stars/:id', function(req, res, next) {
 	res.end('No star data available');	
 });
 
-router.get('/addlabels', function(req, res, next) {
+/*router.get('/addlabels', function(req, res, next) {
 	for (var i in labels) {
 		db.addLabels(labels[i]);	
 	}
 	res.end('labels dumped');
-});
+});*/
 
 module.exports = router;
