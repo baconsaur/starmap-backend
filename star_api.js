@@ -1,21 +1,17 @@
 var http = require('http');
+var db = require('./db/db_api');
 
-var lostPages = [];
-var starData = [];
 var formattedStarData = [];
 
 function getAndFormatData(start, end) {
 	return new Promise(function (resolve, reject) {
-		getPromises(start, end);
+		var starData = getPromises(start, end);
 
 		Promise.all(starData).then(function(starPages) {
 			var allStars = starPages.reduce(function(pageA, pageB){
-				if (pageB) {
-					return pageA.concat(pageB);
-				} else {
-					return pageA;
-				}
+				return pageA.concat(pageB);
 			});
+			console.log(allStars.length);
 			formattedStarData = formatStarData(allStars);
 			console.log('page set complete');
 			resolve(formattedStarData);
@@ -24,9 +20,11 @@ function getAndFormatData(start, end) {
 }
 
 function getPromises(start, end) {
+	var	starData = [];
 	for (i=start;i<end;i++) {
 		starData.push(getStars(i));
 	}
+	return starData;
 }
 
 function getStars(page) {
@@ -41,7 +39,6 @@ function getStars(page) {
 					resolve(JSON.parse(body));
 				} else {
 					console.log('lost page '+page);
-					lostPages.push(page);
 					resolve();
 				}
 			});
@@ -66,7 +63,8 @@ function formatStarData(data) {
 				distance: data[i].distly,
 				r: color.r,
 				g: color.g,
-				b: color.b
+				b: color.b,
+				exoplanets: 0
 			});
 		}
 	}
@@ -92,10 +90,10 @@ function formatColor(color) {
 		red = 329.698727446 * (Math.pow(red, -0.1332047592));
 
 		if (red < 0) {
-			red = 0
+			red = 0;
 		}
 		else if (red > 255 ) {
-			red = 255
+			red = 255;
 		}
 	}
 
@@ -103,19 +101,19 @@ function formatColor(color) {
 		green = temp;
 		green = (99.4708025861 * Math.log(green)) - 161.1195681661;
 		if (green < 0) {
-			green = 0
+			green = 0;
 		}
 		else if (green > 255 ) {
-			green = 255
+			green = 255;
 		}
 	} else {
-		green = temp - 60
+		green = temp - 60;
 		green = 288.1221695283 * (Math.pow(green, -0.0755148492));
 		if (green < 0) {
-			green = 0
+			green = 0;
 		}
 		else if (green > 255 ) {
-			green = 255
+			green = 255;
 		}
 	}
 
@@ -143,3 +141,4 @@ module.exports = {
 		return getAndFormatData(start, end);	
 	}
 };
+
