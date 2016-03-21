@@ -74,7 +74,9 @@ getPromiseChain().then(function(starData) {
 			getExoplanetData().then(function(exoplanets){
 				for (var i in dataWithViews) {
 					for (var j in exoplanets) {
-						if (dataWithViews[i].name.toLowerCase().replace(' ', '') == exoplanets[j].label.toLowerCase().replace(' ', '')) {
+						var entryName = dataWithViews[i].name.toLowerCase().replace(' ', '');
+						var planetName = exoplanets[j].label.toLowerCase().replace(' ', '');
+						if (entryName == planetName) {
 							dataWithViews[i].exoplanets = exoplanets[j].numplanets;
 							break;
 						}
@@ -85,10 +87,10 @@ getPromiseChain().then(function(starData) {
 				console.log('final data: ' + formattedStarData.length);
 				console.log('Star data complete');
 			});
-		}).catch(function(error) {
-			console.log(error);
 		});
 	});
+}).catch(function(error) {
+	console.log(error);
 });
 
 
