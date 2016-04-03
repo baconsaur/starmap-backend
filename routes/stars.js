@@ -6,6 +6,7 @@ var db = require('../db/db_api');
 var labels = require('../starlabels');
 
 var formattedStarData = [];
+var backupData;
 var pageCount = 202;
 
 function getPromiseChain() {
@@ -60,46 +61,54 @@ function getExoplanetData() {
 }
 
 console.log('Getting stars...');
+init();
 
-getPromiseChain().then(function(starData) {
-	Promise.all(starData).then(function(starArray) {
-		console.log('formatting ' + starArray.length + ' entries...');
-		tempData = starArray.reduce(function(partA, partB){
-			console.log(partA.length, partB.length);
-			return partA.concat(partB);
-		});
-		console.log(tempData.length + ' total entries');
-		attachViewRecords(tempData).then(function(dataWithViews) {
-			console.log(dataWithViews.length + ' entries after views attached');
-			getExoplanetData().then(function(exoplanets){
-				for (var i in dataWithViews) {
-					for (var j in exoplanets) {
-						var entryName = dataWithViews[i].name.toLowerCase().replace(' ', '');
-						var planetName = exoplanets[j].label.toLowerCase().replace(' ', '');
-						if (entryName == planetName) {
-							dataWithViews[i].exoplanets = exoplanets[j].numplanets;
-							break;
-						}
-					}	
-				}
-				console.log(dataWithViews.length + ' entries after exoplanets attached');
-				formattedStarData = dataWithViews;
-				console.log('final data: ' + formattedStarData.length);
-				console.log('Star data complete');
+function init () {
+	getPromiseChain().then(function(starData) {
+		Promise.all(starData).then(function(starArray) {
+			console.log('formatting ' + starArray.length + ' entries...');
+			tempData = starArray.reduce(function(partA, partB){
+				console.log(partA.length, partB.length);
+				return partA.concat(partB);
+			});
+			backupData = tempData;
+			console.log(tempData.length + ' total entries');
+			attachViewRecords(tempData).then(function(dataWithViews) {
+				console.log(dataWithViews.length + ' entries after views attached');
+				getExoplanetData().then(function(exoplanets){
+					for (var i in dataWithViews) {
+						for (var j in exoplanets) {
+							var entryName = dataWithViews[i].name.toLowerCase().replace(' ', '');
+							var planetName = exoplanets[j].label.toLowerCase().replace(' ', '');
+							if (entryName == planetName) {
+								dataWithViews[i].exoplanets = exoplanets[j].numplanets;
+								break;
+							}
+						}	
+					}
+					console.log(dataWithViews.length + ' entries after exoplanets attached');
+					formattedStarData = dataWithViews;
+					console.log('final data: ' + formattedStarData.length);
+					console.log('Star data complete');
+				});
 			});
 		});
+	}).catch(function(error) {
+		console.log(error);
 	});
-}).catch(function(error) {
-	console.log(error);
-});
+}
 
+//router.get('/backup', function(req, res, next) {
+//	db.backup(backupData);
+//});
 
 
 router.get('/stars', function(req, res, next) {
 	if (formattedStarData.length > 0) {
 		res.json(formattedStarData);
 	} else {
-		res.end('No star data available');
+		init();
+		res.end('Server error, try again in a few minutes');
 	}
 });
 

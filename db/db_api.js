@@ -2,6 +2,7 @@ require('dotenv').load();
 var db = require('monk')(process.env.DB_URI);
 
 var views = db.get('views');
+var starBackup = db.get('stars');
 
 module.exports = {
 	getViews: function() {
@@ -19,6 +20,13 @@ module.exports = {
 	addLabels: function(star) {
 		return views.update({id: star.id}, {$set: {label: star.label}}, {upsert:true, safe:false}, function(error) {
 			if (error) {
+				console.log(error);
+			}
+		});
+	},
+	backup: function(backupData) {
+		return starBackup.insert({stars: backupData}, function(error) {
+			if(error) {
 				console.log(error);
 			}
 		});
